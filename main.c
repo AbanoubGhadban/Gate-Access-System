@@ -42,10 +42,11 @@ char read_keyboard_input_sync() {
     }
 }
 
-char* show_enter_password_dialogue() {
+char* open_enter_password_dialogue() {
     LCD_clear();
     LCD_string("Press [Enter] to type password");
     while (read_keyboard_input_sync() != '\n');
+    LCD_clear();
 
     int i = 0;
     static char password[33];
@@ -58,6 +59,16 @@ char* show_enter_password_dialogue() {
             continue;
 
         if (c >= ' ' && c <= '~') {
+            LCD_clear();
+
+            int k = 0;
+            while (k != i) {
+                LCD_data('*');
+                k++;
+            }
+
+            LCD_data(c);
+
             password[i] = c;
             i++;
         }
@@ -74,7 +85,34 @@ void show_incorrect_passwd_dialogue() {
     while (read_keyboard_input_sync() != '\n');
 }
 
-void show_main_menu() {
+int open_on_door_closed_menu() {
+    while (1) {
+        LCD_clear();
+        LCD_string("1. Change password");
+        LCD_command(0xC0);
+        LCD_string("2. Open door");
+
+        char c = read_keyboard_input_sync();
+        if (c == '\n') {
+            LCD_clear();
+            LCD_string("3. Logout");
+        }
+        c = read_keyboard_input_sync();
+        if (c == '\n')
+            continue;
+
+        if (c == '1') {
+            char* passwd = open_enter_password_dialogue();
+            // TODO: save the password to the EEPROM
+        } else if (c == '2') {
+            return 0;
+        } else if (c == '3') {
+            return 1;
+        }
+    }
+}
+
+void open_main_menu() {
     while (1) {
         LCD_clear();
         LCD_string("1. Change password");
@@ -83,19 +121,13 @@ void show_main_menu() {
 
         char c = read_keyboard_input_sync();
         if (c == '1') {
-            char* passwd = show_enter_password_dialogue();
+            char* passwd = open_enter_password_dialogue();
             // TODO: save the password to the EEPROM
         } else if (c == '2') {
-            LCD_clear();
-            LCD_string("1. Open door");
-            LCD_command(0xC0);
-            LCD_string("2. Log out");
-
-            char c = read_keyboard_input_sync();
-            if (c == '1') {
-                // TODO: open the door
+            int return_code = open_on_door_closed_menu();
+            if (return_code == 0) {
                 continue;
-            } else if (c == '2') {
+            } else {
                 break;
             }
         }
@@ -109,11 +141,11 @@ int main(void)
     LCD_start();
 
     while (1) {
-        char* password = show_enter_password_dialogue();
+        char* password = open_enter_password_dialogue();
 
         int valid_password = 1; // TODO: change with return of call to check_password()
         if (valid_password) {
-            show_main_menu();
+            open_main_menu();
         } else {
             // TODO: maybe restrict the number of trials here.
             show_incorrect_passwd_dialogue();
