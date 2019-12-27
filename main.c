@@ -96,10 +96,11 @@ int open_on_door_closed_menu() {
         if (c == '\n') {
             LCD_clear();
             LCD_string("3. Logout");
+
+            c = read_keyboard_input_sync();
+            if (c == '\n')
+                continue;
         }
-        c = read_keyboard_input_sync();
-        if (c == '\n')
-            continue;
 
         if (c == '1') {
             char* passwd = open_enter_password_dialogue();
