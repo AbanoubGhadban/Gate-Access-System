@@ -1,5 +1,5 @@
-#ifndef EEPROM_H
-#define EEPROM_H
+#ifndef HASH_H
+#define HASH_H
 
 #include <stdlib.h>
 #include <string.h>
