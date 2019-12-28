@@ -83,7 +83,8 @@ int open_on_door_closed_menu() {
             char* passwd = start_enter_password_dialogue();
             setPassword(passwd);
         } else if (c == '2') {
-            // open the door
+            LCD_string("Opening door..");
+            door_open();
             return 0;
         } else if (c == '3') {
             return 1;
@@ -103,7 +104,8 @@ void open_main_menu() {
             char* passwd = start_enter_password_dialogue();
             setPassword(passwd);
         } else if (c == '2') {
-            // close the door
+            LCD_string("Closing door..")
+            door_close();
             int return_code = open_on_door_closed_menu();
             if (return_code == 0) {
                 continue;
@@ -119,6 +121,8 @@ int main(void)
     KEYBOARD_init();
     LCD_init();
     LCD_start();
+    motor_init();
+    eeprom_init();
 
     while (1) {
         char* password = start_enter_password_dialogue();
