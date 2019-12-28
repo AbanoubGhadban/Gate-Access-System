@@ -60,6 +60,19 @@ void initCharMap(void) {
     char_map[0x7D] = '9';
 }
 
+void startTimeoutTimer(void) {
+    TIMER2_ICR_R |= TIMER_ICR_TATOCINT;
+    TIMER2_CTL_R &= ~TIMER_CTL_TAEN;
+    TIMER2_CFG_R = 0;
+    TIMER2_TAMR_R = 0x1;
+    TIMER2_TAILR_R = TIMEOUT_MS * 16000; // Two milliseconds
+    TIMER2_CTL_R |= TIMER_CTL_TAEN;
+}
+
+int isTimedOut() {
+    return (TIMER2_RIS_R & TIMER_RIS_TATORIS);
+}
+
 char mapChar(char c) {
     return char_map[c];
 }
@@ -85,6 +98,9 @@ void KEYBOARD_init(void) {
     GPIO_PORTF_PCTL_R &= ~(DATA_PIN | DATA_PIN << 1 | DATA_PIN << 2 || DATA_PIN << 3); // configure Data as GPIO
     GPIO_PORTF_AMSEL_R = 0;       //     disable analog functionality on PF
     GPIO_PORTF_PUR_R |= (CLK_PIN | DATA_PIN);     //     enable weak pull-up on Clk and Data
+
+    SYSCTL_RCGCTIMER_R |= SYSCTL_RCGCTIMER_R2;
+    while (!(SYSCTL_PRTIMER_R & SYSCTL_PRTIMER_R2));
 
     GPIO_PORTF_IS_R &= ~CLK_PIN;     // Clk is edge-sensitive
     GPIO_PORTF_IBE_R &= ~CLK_PIN;    //     Clk is not both edges
@@ -132,6 +148,13 @@ int checkParity(unsigned long num) {
 
 void GPIOPortF_Handler(void) {
     GPIO_PORTF_ICR_R = CLK_PIN;      // acknowledge Clk
+
+    if (isTimedOut()) {
+        curData = 0;
+        curDataLen = 0;
+        isUpEvent = 0;
+    }
+    startTimeoutTimer();
 
     unsigned char curBit = (DATA_DATA&DATA_PIN);
     if (curBit)

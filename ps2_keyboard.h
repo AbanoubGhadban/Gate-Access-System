@@ -4,7 +4,7 @@
 #include "tm4c123gh6pm.h"
 
 #define BUFFER_SIZE 20
-#define TIMEOUT 250
+#define TIMEOUT_MS 20
 #define CLK_PIN (1U << 0)
 #define CLK_DATA GPIO_PORTF_DATA_R
 #define DATA_PIN (1U << 4)
