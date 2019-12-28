@@ -9,21 +9,55 @@ char char_map[0xFF] = {};
 
 void initCharMap(void) {
     // TODO: Complete the rest of mapping list
+    char_map[0x15] = 'Q';
+    char_map[0x1D] = 'W';
+    char_map[0x24] = 'E';
+    char_map[0x2D] = 'R';
+    char_map[0x2C] = 'T';
+    char_map[0x35] = 'Y';
+    char_map[0x3C] = 'U';
+    char_map[0x43] = 'I';
+    char_map[0x44] = 'O';
+    char_map[0x4D] = 'P';
     char_map[0x1C] = 'A';
     char_map[0x1B] = 'S';
     char_map[0x23] = 'D';
     char_map[0x2B] = 'F';
     char_map[0x34] = 'G';
     char_map[0x33] = 'H';
+    char_map[0x3B] = 'J';
+    char_map[0x42] = 'K';
+    char_map[0x4B] = 'L';
     char_map[0x1A] = 'Z';
     char_map[0x22] = 'X';
     char_map[0x21] = 'C';
     char_map[0x2A] = 'V';
     char_map[0x32] = 'B';
     char_map[0x31] = 'N';
+    char_map[0x3A] = 'M';
     char_map[0x66] = 0x66;
-    char_map[0x5A] = '\n';
     char_map[0x29] = ' ';
+    char_map[0x5A] = '\n';
+    char_map[0x45] = '0';
+    char_map[0x16] = '1';
+    char_map[0x1E] = '2';
+    char_map[0x26] = '3';
+    char_map[0x25] = '4';
+    char_map[0x2E] = '5';
+    char_map[0x36] = '6';
+    char_map[0x3D] = '7';
+    char_map[0x3E] = '8';
+    char_map[0x46] = '9';
+    char_map[0x70] = '0';
+    char_map[0x69] = '1';
+    char_map[0x72] = '2';
+    char_map[0x7A] = '3';
+    char_map[0x6B] = '4';
+    char_map[0x73] = '5';
+    char_map[0x74] = '6';
+    char_map[0x6C] = '7';
+    char_map[0x75] = '8';
+    char_map[0x7D] = '9';
 }
 
 char mapChar(char c) {
@@ -38,6 +72,7 @@ unsigned long curDataLen = 0;
 int isUpEvent = 0;
 
 void KEYBOARD_init(void) {
+    initCharMap();
     SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R5; // (a) activate clock for port F
     while (!(SYSCTL_PRGPIO_R&SYSCTL_PRGPIO_R5));
 
@@ -131,10 +166,6 @@ void GPIOPortF_Handler(void) {
                 char c = mapChar(actualData);
                 if (c)
                     enqueue(c);
-                else {
-                    enqueue(hex_map[actualData/16]);
-                    enqueue(hex_map[actualData%16]);
-                }
             }
         }
 
