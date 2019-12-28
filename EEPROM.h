@@ -4,9 +4,9 @@
 
 
 void eeprom_init() ;
-unsigned long write(unsigned long block, unsigned long offset, unsigned long data);
-unsigned long read(unsigned long block, unsigned long offset) ;
-void SetPassword(char ch[32]);
-bool CheckPassword(unsigned char ch[32]) ; 
+unsigned long eeprom_write(unsigned long block, unsigned long offset, unsigned long data);
+unsigned long eeprom_read(unsigned long block, unsigned long offset) ;
+void setPassword(char* password);
+bool checkPassword(char* password);
 
 #endif
