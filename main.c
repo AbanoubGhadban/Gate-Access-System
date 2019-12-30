@@ -1,6 +1,8 @@
 #include "tm4c123gh6pm.h"
 #include "ps2_keyboard.h"
 #include "lcd.h"
+#include "motor.h"
+#include "EEPROM.h"
 
 #define MAX_PASSWORD_LENGTH 32
 
@@ -30,7 +32,10 @@ char* start_enter_password_dialogue() {
         if (i == MAX_PASSWORD_LENGTH)
             continue;
 
-        if (c >= ' ' && c <= '~') {
+        if (c == 0x66) {
+            LCD_clear();
+            i = 0;
+        } else if (c >= ' ' && c <= '~') {
             LCD_clear();
 
             int k = 0;
@@ -53,11 +58,10 @@ char* start_enter_password_dialogue() {
 }
 
 void open_incorrect_passwd_dialogue() {
-    LCD_string("Incorrect password!");
+    LCD_clear();
+    LCD_string("Incorrect Secret");
     LCD_command(0xC0);
-    LCD_string("Press [Enter] to");
-    LCD_command(0xC0);
-    LCD_string("try again.");
+    LCD_string("[Enter] try again");
 
     while (read_keyboard_char_sync() != '\n');
 }
@@ -104,7 +108,7 @@ void open_main_menu() {
             char* passwd = start_enter_password_dialogue();
             setPassword(passwd);
         } else if (c == '2') {
-            LCD_string("Closing door..")
+            LCD_string("Closing door..");
             door_close();
             int return_code = open_on_door_closed_menu();
             if (return_code == 0) {
@@ -129,6 +133,7 @@ int main(void)
 
         int valid_password = checkPassword(password);
         if (valid_password) {
+            door_open();
             open_main_menu();
         } else {
             open_incorrect_passwd_dialogue();
