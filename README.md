@@ -6,4 +6,4 @@ password is entered, the door is opened and the concerned person is allowed acce
 secured area. After some time, the door would be closed. The system should allow users to
 program the password through a configuration menu.
 ## YoutubeView
-[a link](https://www.youtube.com/watch?v=6K19ZQRX758)
+[YoutubeVideo](https://www.youtube.com/watch?v=6K19ZQRX758)
